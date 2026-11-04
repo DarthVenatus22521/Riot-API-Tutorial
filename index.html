@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="A Python tutorial for Riot API match history, KDA, win rate, and charts."><title>From Riot API to Match Statistics | Python Walkthrough</title><style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#111c2d;--card:#162439;--line:#283951;--text:#eaf0f8;--muted:#a9bad0;--accent:#7fc8ff;--accent2:#a6e5c3}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}a{color:var(--accent);text-underline-offset:3px}a:hover{color:#b3e0ff}.site-head{border-bottom:1px solid var(--line);background:linear-gradient(115deg,#142641,#0c1524);padding:52px max(24px,calc((100vw - 1200px)/2));}.eyebrow{color:var(--accent2);text-transform:uppercase;letter-spacing:.14em;font-size:.76rem;font-weight:750}.site-head h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;max-width:840px;margin:15px 0}.site-head p{max-width:700px;color:var(--muted);margin-bottom:0}.layout{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:240px minmax(0,1fr);gap:50px;padding:44px 24px 90px}.toc{align-self:start;position:sticky;top:26px;border-left:1px solid var(--line);padding:5px 0 5px 18px}.toc strong{display:block;font-size:.75rem;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;margin:0 0 12px}.toc a{display:block;text-decoration:none;color:var(--muted);font-size:.89rem;line-height:1.5;padding:7px 0}.toc a:hover{color:var(--accent)}article{min-width:0;max-width:840px}article>h1{display:none}article h2{font-size:1.65rem;line-height:1.3;margin:49px 0 16px;padding-top:18px;border-top:1px solid var(--line);scroll-margin-top:20px}article h3{font-size:1.24rem}article p{margin:15px 0;color:#d3dfed}article strong{color:var(--text)}article :not(pre)>code{background:#1d3046;border:1px solid #344760;padding:.12em .38em;border-radius:5px;font-size:.9em;overflow-wrap:anywhere}pre.code-block{position:relative;background:#091421;border:1px solid var(--line);border-radius:13px;overflow:hidden;margin:20px 0 25px;line-height:1.55}.code-heading{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:#142238;padding:8px 15px;color:var(--muted);font-size:.72rem;font-weight:700;letter-spacing:.1em}.copy-code{cursor:pointer;background:#253b56;border:1px solid #405b79;color:var(--text);border-radius:6px;padding:5px 11px;letter-spacing:0;font:600 .75rem inherit}.copy-code:hover{background:#365472}pre.code-block code{display:block;overflow-x:auto;padding:18px 20px;color:#e5edf6;font-size:.85rem;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;tab-size:4}.table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:11px;margin:24px 0}table{border-collapse:collapse;width:100%;min-width:640px;font-size:.91rem}th,td{text-align:left;padding:13px 15px;vertical-align:top;border-bottom:1px solid var(--line)}th{background:#1c3048;color:var(--text)}tr:last-child td{border-bottom:0}td{color:#cddaea}.article-image{display:block;max-width:100%;height:auto;margin:26px auto 8px;border:1px solid var(--line);border-radius:10px}.figure-caption{color:var(--muted);font-size:.88rem;text-align:center}.image-missing{display:block;border:1px dashed #54708d;background:#15243a;border-radius:10px;padding:22px;color:var(--muted);font-size:.9rem;margin:20px 0}.image-missing[hidden]{display:none}.footer{border-top:1px solid var(--line);padding:24px;color:var(--muted);font-size:.85rem;text-align:center}@media(max-width:860px){.layout{grid-template-columns:1fr;gap:12px;padding-top:18px}.toc{position:static;border-left:0;border-bottom:1px solid var(--line);padding:0 0 15px;display:flex;gap:10px;flex-wrap:wrap}.toc strong{width:100%;margin-bottom:0}.toc a{padding:6px 11px;border-radius:99px;background:var(--panel);font-size:.8rem}.site-head{padding:40px 24px}article h2{margin-top:35px}}
+
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+pre.code-block code .hll { background-color: #49483e }
+pre.code-block code { background: #272822; color: #F8F8F2 }
+pre.code-block code .c { color: #959077 } /* Comment */
+pre.code-block code .err { color: #ED007E; background-color: #1E0010 } /* Error */
+pre.code-block code .esc { color: #F8F8F2 } /* Escape */
+pre.code-block code .g { color: #F8F8F2 } /* Generic */
+pre.code-block code .k { color: #66D9EF } /* Keyword */
+pre.code-block code .l { color: #AE81FF } /* Literal */
+pre.code-block code .n { color: #F8F8F2 } /* Name */
+pre.code-block code .o { color: #FF4689 } /* Operator */
+pre.code-block code .x { color: #F8F8F2 } /* Other */
+pre.code-block code .p { color: #F8F8F2 } /* Punctuation */
+pre.code-block code .ch { color: #959077 } /* Comment.Hashbang */
+pre.code-block code .cm { color: #959077 } /* Comment.Multiline */
+pre.code-block code .cp { color: #959077 } /* Comment.Preproc */
+pre.code-block code .cpf { color: #959077 } /* Comment.PreprocFile */
+pre.code-block code .c1 { color: #959077 } /* Comment.Single */
+pre.code-block code .cs { color: #959077 } /* Comment.Special */
+pre.code-block code .gd { color: #FF4689 } /* Generic.Deleted */
+pre.code-block code .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+pre.code-block code .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+pre.code-block code .gr { color: #F8F8F2 } /* Generic.Error */
+pre.code-block code .gh { color: #F8F8F2 } /* Generic.Heading */
+pre.code-block code .gi { color: #A6E22E } /* Generic.Inserted */
+pre.code-block code .go { color: #66D9EF } /* Generic.Output */
+pre.code-block code .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+pre.code-block code .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+pre.code-block code .gu { color: #959077 } /* Generic.Subheading */
+pre.code-block code .gt { color: #F8F8F2 } /* Generic.Traceback */
+pre.code-block code .kc { color: #66D9EF } /* Keyword.Constant */
+pre.code-block code .kd { color: #66D9EF } /* Keyword.Declaration */
+pre.code-block code .kn { color: #FF4689 } /* Keyword.Namespace */
+pre.code-block code .kp { color: #66D9EF } /* Keyword.Pseudo */
+pre.code-block code .kr { color: #66D9EF } /* Keyword.Reserved */
+pre.code-block code .kt { color: #66D9EF } /* Keyword.Type */
+pre.code-block code .ld { color: #E6DB74 } /* Literal.Date */
+pre.code-block code .m { color: #AE81FF } /* Literal.Number */
+pre.code-block code .s { color: #E6DB74 } /* Literal.String */
+pre.code-block code .na { color: #A6E22E } /* Name.Attribute */
+pre.code-block code .nb { color: #F8F8F2 } /* Name.Builtin */
+pre.code-block code .nc { color: #A6E22E } /* Name.Class */
+pre.code-block code .no { color: #66D9EF } /* Name.Constant */
+pre.code-block code .nd { color: #A6E22E } /* Name.Decorator */
+pre.code-block code .ni { color: #F8F8F2 } /* Name.Entity */
+pre.code-block code .ne { color: #A6E22E } /* Name.Exception */
+pre.code-block code .nf { color: #A6E22E } /* Name.Function */
+pre.code-block code .nl { color: #F8F8F2 } /* Name.Label */
+pre.code-block code .nn { color: #F8F8F2 } /* Name.Namespace */
+pre.code-block code .nx { color: #A6E22E } /* Name.Other */
+pre.code-block code .py { color: #F8F8F2 } /* Name.Property */
+pre.code-block code .nt { color: #FF4689 } /* Name.Tag */
+pre.code-block code .nv { color: #F8F8F2 } /* Name.Variable */
+pre.code-block code .ow { color: #FF4689 } /* Operator.Word */
+pre.code-block code .pm { color: #F8F8F2 } /* Punctuation.Marker */
+pre.code-block code .w { color: #F8F8F2 } /* Text.Whitespace */
+pre.code-block code .mb { color: #AE81FF } /* Literal.Number.Bin */
+pre.code-block code .mf { color: #AE81FF } /* Literal.Number.Float */
+pre.code-block code .mh { color: #AE81FF } /* Literal.Number.Hex */
+pre.code-block code .mi { color: #AE81FF } /* Literal.Number.Integer */
+pre.code-block code .mo { color: #AE81FF } /* Literal.Number.Oct */
+pre.code-block code .sa { color: #E6DB74 } /* Literal.String.Affix */
+pre.code-block code .sb { color: #E6DB74 } /* Literal.String.Backtick */
+pre.code-block code .sc { color: #E6DB74 } /* Literal.String.Char */
+pre.code-block code .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+pre.code-block code .sd { color: #E6DB74 } /* Literal.String.Doc */
+pre.code-block code .s2 { color: #E6DB74 } /* Literal.String.Double */
+pre.code-block code .se { color: #AE81FF } /* Literal.String.Escape */
+pre.code-block code .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+pre.code-block code .si { color: #E6DB74 } /* Literal.String.Interpol */
+pre.code-block code .sx { color: #E6DB74 } /* Literal.String.Other */
+pre.code-block code .sr { color: #E6DB74 } /* Literal.String.Regex */
+pre.code-block code .s1 { color: #E6DB74 } /* Literal.String.Single */
+pre.code-block code .ss { color: #E6DB74 } /* Literal.String.Symbol */
+pre.code-block code .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+pre.code-block code .fm { color: #A6E22E } /* Name.Function.Magic */
+pre.code-block code .vc { color: #F8F8F2 } /* Name.Variable.Class */
+pre.code-block code .vg { color: #F8F8F2 } /* Name.Variable.Global */
+pre.code-block code .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+pre.code-block code .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+pre.code-block code .il { color: #AE81FF } /* Literal.Number.Integer.Long */</style></head>
+<body><header class="site-head"><div class="eyebrow">League of Legends · Python · Data Science</div><h1>From Riot API to Match Statistics</h1><p>A step-by-step walkthrough of requesting match history, cleaning JSON data, and visualizing ranked performance.</p></header><div class="layout"><aside class="toc" aria-label="Table of contents"><strong>On this page</strong><a href="#keep-your-api-key-out-of-your-code">Keep your API key out of your code</a>
+<a href="#look-up-a-player-and-their-match-ids">Look up a player and their match IDs</a>
+<a href="#turn-nested-json-into-one-row-per-match">Turn nested JSON into one row per match</a>
+<a href="#clean-the-matches-and-calculate-statistics">Clean the matches and calculate statistics</a>
+<a href="#plot-performance-over-time">Plot performance over time</a>
+<a href="#try-it-with-your-own-match-history">Try it with your own match history</a></aside><main><article><h1 id="from-riot-api-to-match-statistics-a-python-walkthrough">From Riot API to Match Statistics: A Python Walkthrough</h1>
+<p>League of Legends match history is a useful example of a common data-science task: data are available through an API, but they arrive as nested JSON rather than as a tidy table. In this tutorial, we will use Python to request recent League of Legends match data, keep only Ranked Solo/Duo games, calculate KDA and win rate, and plot how those statistics change across matches.</p>
+<p>You will need a Riot developer API key and the Python packages <code>requests</code>, <code>pandas</code>, <code>matplotlib</code>, and <code>seaborn</code>. Install the packages with:</p>
+<pre class="code-block"><div class="code-heading"><span>BASH</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code>pip<span class="w"> </span>install<span class="w"> </span>requests<span class="w"> </span>pandas<span class="w"> </span>matplotlib<span class="w"> </span>seaborn
+</code></pre>
+<h2 id="keep-your-api-key-out-of-your-code">Keep your API key out of your code</h2>
+<p>An API key identifies your requests to Riot. Treat it like a password: do not post it in a public repository, blog, screenshot, or shared notebook. Riot’s <a href="https://developer.riotgames.com/docs/lol">developer documentation</a> says API keys should not be included in code. If a key has already been shared, revoke it in the Developer Portal and create a fresh one.</p>
+<p>Store your new key in an environment variable. On macOS or Linux, you can set it in a terminal before running your script:</p>
+<pre class="code-block"><div class="code-heading"><span>BASH</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="nb">export</span><span class="w"> </span><span class="nv">RIOT_API_KEY</span><span class="o">=</span><span class="s2">"paste-your-new-key-here"</span>
+</code></pre>
+<p>Then read it in Python and add it to the request header:</p>
+<pre class="code-block"><div class="code-heading"><span>PYTHON</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"RIOT_API_KEY"</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+<span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Set the RIOT_API_KEY environment variable first."</span><span class="p">)</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"X-Riot-Token"</span><span class="p">:</span> <span class="n">api_key</span><span class="p">})</span>
+</code></pre>
+<p>The session reuses this header for authenticated API calls, so you do not have to attach the key to every URL.</p>
+<p>The tutorial uses three Riot endpoints:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Route</th>
+<th>What it provides</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account-V1: account by Riot ID</td>
+<td><code>/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}</code></td>
+<td>Converts a Riot ID into the PUUID used by match-history endpoints.</td>
+</tr>
+<tr>
+<td>Match-V5: match IDs by PUUID</td>
+<td><code>/lol/match/v5/matches/by-puuid/{puuid}/ids</code></td>
+<td>Returns recent match IDs; <code>start</code> and <code>count</code> select a page of results.</td>
+</tr>
+<tr>
+<td>Match-V5: match by ID</td>
+<td><code>/lol/match/v5/matches/{matchId}</code></td>
+<td>Returns the full match JSON, including the participant statistics.</td>
+</tr>
+</tbody>
+</table></div>
+<p>These routes are appended to a regional API host such as <code>https://americas.api.riotgames.com</code>.</p>
+<h2 id="look-up-a-player-and-their-match-ids">Look up a player and their match IDs</h2>
+<p>Riot IDs have a game name and a tag line. The Account API converts those two pieces into a PUUID, Riot’s stable player identifier. For the Americas routing cluster, the account lookup endpoint looks like this:</p>
+<pre class="code-block"><div class="code-heading"><span>PYTHON</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote</span>
+<span class="n">region</span> <span class="o">=</span> <span class="s2">"americas"</span>
+<span class="n">game_name</span> <span class="o">=</span> <span class="s2">"your-game-name"</span>
+<span class="n">tag_line</span> <span class="o">=</span> <span class="s2">"your-tag"</span>
+<span class="n">account_url</span> <span class="o">=</span> <span class="p">(</span>
+<span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">region</span><span class="si">}</span><span class="s2">.api.riotgames.com/riot/account/v1/accounts/"</span>
+<span class="sa">f</span><span class="s2">"by-riot-id/</span><span class="si">{</span><span class="n">quote</span><span class="p">(</span><span class="n">game_name</span><span class="p">,</span><span class="w"> </span><span class="n">safe</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">quote</span><span class="p">(</span><span class="n">tag_line</span><span class="p">,</span><span class="w"> </span><span class="n">safe</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">account_url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<span class="n">puuid</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"puuid"</span><span class="p">]</span>
+</code></pre>
+<p><code>quote</code> safely encodes spaces and special characters in a Riot ID. The <code>raise_for_status()</code> call stops the script with an error if the request fails, instead of letting later code fail in a confusing way. Use the regional routing value that matches the account and endpoint; Riot lists routing values in its <a href="https://developer.riotgames.com/docs/lol#routing-values">API documentation</a>.</p>
+<p>Next, request match IDs. This endpoint returns identifiers, not the full match statistics. The <code>count</code> parameter is capped at 100 per request, so this example asks for 50 recent games:</p>
+<pre class="code-block"><div class="code-heading"><span>PYTHON</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="n">match_ids_url</span> <span class="o">=</span> <span class="p">(</span>
+<span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">region</span><span class="si">}</span><span class="s2">.api.riotgames.com/lol/match/v5/"</span>
+<span class="sa">f</span><span class="s2">"matches/by-puuid/</span><span class="si">{</span><span class="n">puuid</span><span class="si">}</span><span class="s2">/ids"</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+<span class="n">match_ids_url</span><span class="p">,</span>
+<span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"start"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">:</span> <span class="mi">50</span><span class="p">},</span>
+<span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<span class="n">match_ids</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</code></pre>
+<p>Each match ID needs a separate Match API request to retrieve its full record. That means 50 IDs can lead to 50 more requests. The finished script pauses between match requests and waits before retrying if Riot returns a rate-limit response. Keeping the sample to a manageable size makes a tutorial run quicker and gentler on the API.</p>
+<h2 id="turn-nested-json-into-one-row-per-match">Turn nested JSON into one row per match</h2>
+<p>A match response contains a list of ten participants under <code>info["participants"]</code>. <code>pandas.json_normalize()</code> turns that list of dictionaries into columns. We request each match, select the row whose PUUID matches our player, and add match-level fields such as the queue and creation time:</p>
+<pre class="code-block"><div class="code-heading"><span>PYTHON</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">match_id</span> <span class="ow">in</span> <span class="n">match_ids</span><span class="p">:</span>
+<span class="n">match_url</span> <span class="o">=</span> <span class="p">(</span>
+<span class="sa">f</span><span class="s2">"https://</span><span class="si">{</span><span class="n">region</span><span class="si">}</span><span class="s2">.api.riotgames.com/lol/match/v5/matches/</span><span class="si">{</span><span class="n">match_id</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">match_url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<span class="n">match</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="n">info</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">"info"</span><span class="p">]</span>
+<span class="n">participants</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"participants"</span><span class="p">])</span>
+<span class="n">player_row</span> <span class="o">=</span> <span class="n">participants</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">participants</span><span class="p">[</span><span class="s2">"puuid"</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">puuid</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">player_row</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+<span class="n">player_row</span><span class="p">[</span><span class="s2">"matchId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">"metadata"</span><span class="p">][</span><span class="s2">"matchId"</span><span class="p">]</span>
+<span class="n">player_row</span><span class="p">[</span><span class="s2">"gameMode"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"gameMode"</span><span class="p">]</span>
+<span class="n">player_row</span><span class="p">[</span><span class="s2">"queueId"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"queueId"</span><span class="p">]</span>
+<span class="n">player_row</span><span class="p">[</span><span class="s2">"gameCreation"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"gameCreation"</span><span class="p">]</span>
+<span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">player_row</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.2</span><span class="p">)</span> <span class="c1"># pause between requests</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+<span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"No participant rows were returned."</span><span class="p">)</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre>
+<p>The result is a rectangular DataFrame: each row is one match for the selected player, and each column is a match statistic or identifier. The complete script also handles HTTP errors and waits before retrying when Riot returns a rate-limit response.</p>
+<h2 id="clean-the-matches-and-calculate-statistics">Clean the matches and calculate statistics</h2>
+<p>The API returns multiple modes and queues. This project focuses on Ranked Solo/Duo, identified by queue ID <code>420</code>; Riot’s <a href="https://static.developer.riotgames.com/docs/lol/queues.json">queue list</a> describes it as 5v5 Ranked Solo. The <code>CLASSIC</code> check keeps the Summoner’s Rift game mode. After filtering, remove duplicate or incomplete rows and sort by creation time so the first row is the oldest match.</p>
+<pre class="code-block"><div class="code-heading"><span>PYTHON</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="n">ranked</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+<span class="n">matches</span><span class="p">[</span><span class="s2">"gameMode"</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="s2">"CLASSIC"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">matches</span><span class="p">[</span><span class="s2">"queueId"</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">420</span><span class="p">)</span>
+<span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">ranked</span> <span class="o">=</span> <span class="n">ranked</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s2">"matchId"</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span>
+<span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">"gameCreation"</span><span class="p">,</span> <span class="s2">"kills"</span><span class="p">,</span> <span class="s2">"deaths"</span><span class="p">,</span> <span class="s2">"assists"</span><span class="p">,</span> <span class="s2">"win"</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">ranked</span> <span class="o">=</span> <span class="n">ranked</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"gameCreation"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ranked</span><span class="p">[</span><span class="s2">"match_number"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranked</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ranked</span><span class="p">[</span><span class="s2">"match_kda"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+<span class="n">ranked</span><span class="p">[</span><span class="s2">"kills"</span><span class="p">]</span> <span class="o">+</span> <span class="n">ranked</span><span class="p">[</span><span class="s2">"assists"</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">/</span> <span class="n">ranked</span><span class="p">[</span><span class="s2">"deaths"</span><span class="p">]</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ranked</span><span class="p">[</span><span class="s2">"rolling_kda"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ranked</span><span class="p">[</span><span class="s2">"match_kda"</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">ranked</span><span class="p">[</span><span class="s2">"rolling_win_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ranked</span><span class="p">[</span><span class="s2">"win"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span>
+<span class="mi">5</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</code></pre>
+<p>KDA is <code>(kills + assists) / deaths</code>. The <code>.clip(lower=1)</code> guard treats a match with zero deaths as a denominator of 1, avoiding division by zero. The rolling calculations summarize the current match and up to the previous four matches; the first few points use fewer than five games. The overall win rate is <code>ranked["win"].mean()</code> because a Boolean column averages to the proportion of <code>True</code> values.</p>
+<h2 id="plot-performance-over-time">Plot performance over time</h2>
+<p>The script creates two Seaborn plots. The first is a scatter plot of each match’s KDA, with color indicating a win or loss. A line overlays the five-match rolling KDA average. The second is a line chart of rolling win rate, with a dashed 50% reference line. In both, the x-axis uses match order from oldest to newest, making recent performance easy to find at the right side.</p>
+<p>These charts answer different questions. The scatter plot shows how much KDA varies from game to game, while its rolling line makes the broader pattern easier to see. The win-rate plot smooths individual outcomes so one win or loss does not dominate the story. Neither chart proves that a player is improving; a short run of matches can be noisy, and KDA or win rate does not capture every contribution to a game.</p>
+<p>Here are example outputs from the script. In the first chart, green points are wins and red points are losses; the dark line is the rolling KDA average. In the second, the blue line shows the win rate across up to the most recent five matches, and the dashed line marks 50%.</p>
+<p><img alt="Scatter plot of KDA in recent ranked Solo/Duo matches, with green win points, red loss points, and a dark five-match rolling average line." class="article-image" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="images/recent_match_kda.png"/><span class="image-missing" hidden="">Chart image not found. Add images/recent_match_kda.png to your repository to display this figure.</span></p>
+<p class="figure-caption"><em>Figure 1. Match-by-match KDA and its five-match rolling average.</em></p>
+<p><img alt="Line chart of rolling win rate across recent ranked Solo/Duo matches, with a dashed 50 percent reference line." class="article-image" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false" src="images/recent_match_win_rate.png"/><span class="image-missing" hidden="">Chart image not found. Add images/recent_match_win_rate.png to your repository to display this figure.</span></p>
+<p class="figure-caption"><em>Figure 2. Win rate across up to the most recent five matches.</em></p>
+<p>Here is the core Seaborn code for the two views. It expects the cleaned <code>ranked</code> DataFrame from the previous section:</p>
+<pre class="code-block"><div class="code-heading"><span>PYTHON</span><button aria-label="Copy code" class="copy-code" type="button">Copy</button></div><code><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+<span class="n">data</span><span class="o">=</span><span class="n">ranked</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"match_number"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"match_kda"</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">"result"</span><span class="p">,</span>
+<span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="s2">"Win"</span><span class="p">:</span> <span class="s2">"#238b45"</span><span class="p">,</span> <span class="s2">"Loss"</span><span class="p">:</span> <span class="s2">"#cb181d"</span><span class="p">},</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span>
+<span class="n">data</span><span class="o">=</span><span class="n">ranked</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"match_number"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"rolling_kda"</span><span class="p">,</span>
+<span class="n">color</span><span class="o">=</span><span class="s2">"#253858"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"5-match rolling average"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"KDA by Match"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Oldest → newest"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"KDA"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span>
+<span class="n">data</span><span class="o">=</span><span class="n">ranked</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"match_number"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"rolling_win_rate"</span><span class="p">,</span>
+<span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"50</span><span class="si">% r</span><span class="s2">eference"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Rolling Win Rate"</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Oldest → newest"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"Win rate"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre>
+<h2 id="try-it-with-your-own-match-history">Try it with your own match history</h2>
+<p>Set your Riot ID and routing cluster in the script, then run it with a fresh API key in the environment. Check that the resulting DataFrame contains only the player’s Ranked Solo/Duo matches before interpreting the plots. As a next step, change the rolling window from five to ten matches and compare how the trend line changes. For details about endpoints and current API guidance, use Riot’s <a href="https://developer.riotgames.com/docs/lol">League of Legends API documentation</a>.</p>
+</article></main></div><footer class="footer">Educational walkthrough · Riot API documentation linked throughout</footer><script>document.querySelectorAll('.copy-code').forEach(btn=>btn.addEventListener('click',async()=>{const code=btn.closest('pre').querySelector('code').innerText;try{await navigator.clipboard.writeText(code);btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500)}catch(e){btn.textContent='Select code to copy'}}));</script></body></html>
